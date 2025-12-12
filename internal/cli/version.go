@@ -6,11 +6,17 @@ import (
 	"github.com/spf13/cobra"
 	"golang.org/x/mod/semver"
 
+	"github.com/agentregistry-dev/agentregistry/internal/client"
 	"github.com/agentregistry-dev/agentregistry/internal/version"
-	"github.com/agentregistry-dev/agentregistry/pkg/cli"
 )
 
-var versionCmd = &cobra.Command{
+var apiClient *client.Client
+
+func SetAPIClient(client *client.Client) {
+	apiClient = client
+}
+
+var VersionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Show version information",
 	Long:  `Displays the version of arctl.`,
@@ -18,7 +24,7 @@ var versionCmd = &cobra.Command{
 		fmt.Printf("arctl version %s\n", version.Version)
 		fmt.Printf("Git commit: %s\n", version.GitCommit)
 		fmt.Printf("Build date: %s\n", version.BuildDate)
-		serverVersion, err := cli.APIClient.GetVersion()
+		serverVersion, err := apiClient.GetVersion()
 		if err != nil {
 			fmt.Printf("Error getting server version: %v\n", err)
 			return
@@ -45,8 +51,4 @@ var versionCmd = &cobra.Command{
 		}
 
 	},
-}
-
-func init() {
-	cli.Root().AddCommand(versionCmd)
 }
